@@ -2,21 +2,27 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Codigo tomado de: http://bluefever.net/Downloads/BeginC/ch51.c
 char *readFile (char*);
+void writeFile (char*, char*);
 
 int main(int argc, char *argv[]) {
 
-  if (argc != 2) {
-    printf("Uso: %s <nombre_del_archivo.txt>\n", argv[0]);
-    return 1;  // Salir del programa con código de error
-    }
     
+  if (argc == 2 || argc == 3) {
     char *fileName = argv[1];
+    char *fileNametoWrite = argv[2];
+    
     char * fileReadyToWrite = readFile(fileName);
+    if (argc == 3)
+    {
+        writeFile(fileNametoWrite, fileReadyToWrite);
+    }
     printf("%s", fileReadyToWrite);
-
     return 0;
+    }
+    else{
+        return 1;
+    } 
 }
 
 char *readFile(char *fileName){
@@ -64,4 +70,20 @@ char *readFile(char *fileName){
     }
 
     return resultado;
+}
+
+void writeFile (char* fileName, char* textReadyToWrite){
+    FILE *outFile = fopen(fileName, "w");
+    if (outFile == NULL) {
+        perror("Error al abrir el archivo de salida");
+    }
+
+    // Escribir el contenido en el archivo de salida
+    fprintf(outFile, "%s", textReadyToWrite);
+
+    // Cerrar el archivo de salida
+    fclose(outFile);
+
+    // Liberar la memoria utilizada por el resultado
+    free(textReadyToWrite);
 }
