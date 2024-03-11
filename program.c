@@ -1,11 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h> 
 
 #define MAX_LINE_LENGTH 1024
 
 void printErrorMessage(const char *message) {
     fprintf(stderr, "%s\n", message);
+}
+
+void printErrorMessages(const char *message, const char *filename) {
+    fprintf(stderr, "reverse: %s '%s'\n", message, filename);
 }
 
 // Esta función invierte el orden de un arreglo de cadenas
@@ -42,15 +47,24 @@ int main(int argc, char *argv[]) {
         // Se especificó solo un argumento, leer desde el archivo de entrada y escribir en stdout
         inputFile = fopen(argv[1], "r");
         if (inputFile == NULL) {
-            printErrorMessage("cannot open file");
+            printErrorMessages("cannot open file", argv[1]);
             exit(1);
         }
         outputFile = stdout;
     } else {
         // Se especificaron dos argumentos, leer desde el archivo de entrada y escribir en el archivo de salida
+        struct stat input_stat, output_stat;
+        if (stat(argv[1], &input_stat) == 0 && stat(argv[2], &output_stat) == 0){
+             if (input_stat.st_ino == output_stat.st_ino){
+                printErrorMessage("reverse: input and output file must differ");
+                exit(1);
+             }
+        }
+        
+        
         inputFile = fopen(argv[1], "r");
         if (inputFile == NULL) {
-            printErrorMessage("cannot open input file");
+            printErrorMessages("cannot open file", argv[1]);
             exit(1);
         }
         outputFile = fopen(argv[2], "w");
@@ -61,7 +75,7 @@ int main(int argc, char *argv[]) {
 
         // Verificar si el archivo de entrada y salida son el mismo
         if (strcmp(argv[1], argv[2]) == 0) {
-            printErrorMessage("input and output files must differ");
+            printErrorMessage("reverse: input and output file must differ");
             exit(1);
         }
     }
