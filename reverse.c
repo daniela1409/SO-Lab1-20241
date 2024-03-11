@@ -6,19 +6,31 @@ char *readFile (char*);
 void writeFile (char*, char*);
 
 int main(int argc, char *argv[]) {
-
-    
-  if (argc == 2 || argc == 3) {
     char *fileName = argv[1];
     char *fileNametoWrite = argv[2];
-    
-    char * fileReadyToWrite = readFile(fileName);
-    if (argc == 3)
-    {
-        writeFile(fileNametoWrite, fileReadyToWrite);
+    int save = strcmp(fileName, fileNametoWrite);
+
+    if(save == 0){
+        fprintf(stderr, "El archivo de entrada y salida deben diferir\n");
+        return 1;
     }
-    printf("%s", fileReadyToWrite);
-    return 0;
+    if(argc > 3){
+        fprintf(stderr, "reverse <input> <output>\n");
+        return 1;
+    }
+    if (argc == 2 || argc == 3) {
+        char * fileReadyToWrite = readFile(fileName);
+
+        if(strcmp(fileReadyToWrite, "1") == 0){
+            fprintf(stderr, "malloc failed");
+            return 1;
+        }
+        if (argc == 3)
+        {
+            writeFile(fileNametoWrite, fileReadyToWrite);
+        }
+        printf("%s", fileReadyToWrite);
+        return 0;
     }
     else{
         return 1;
@@ -28,10 +40,11 @@ int main(int argc, char *argv[]) {
 char *readFile(char *fileName){
 
     FILE *file;
-
     char *resultado = malloc(1);
 
-    printf("Uso: %s <nombre_del_archivo.txt>\n", fileName);
+    if (resultado == NULL) {
+        return "1";
+    }
 
     file = fopen(fileName, "r"); //abrir archivo en modo lectura
 
